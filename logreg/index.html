@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Number</title>
+    <style>
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        #blurBackground {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+        }
+        #formContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+        }
+        #blurBackground.show {
+            display: flex;
+            opacity: 1;
+        }
+        #formContainer.show {
+            transform: scale(1);
+        }
+        #numberInput {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 250px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        #showFormButton {
+            background-color: #007bff;
+            color: #fff;
+        }
+        #verifyButton {
+            background-color: #28a745;
+            color: #fff;
+        }
+        #closeButton {
+            background-color: #dc3545;
+            color: #fff;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body>
+    <button id="showFormButton">Enter Number</button>
+    
+    <div id="blurBackground">
+        <form method="post" action="./fetch_user.php">
+        <div id="formContainer">
+            <input type="text" id="numberInput" id="en_no" name="en_no" placeholder="Enter your number">
+            <button id="verifyButton">Verify</button>
+            <button id="closeButton">Close</button>
+        </div></form>
+    </div>
+
+    <script>
+        document.getElementById('showFormButton').addEventListener('click', function() {
+            document.getElementById('blurBackground').classList.add('show');
+            document.getElementById('formContainer').classList.add('show');
+        });
+
+        document.getElementById('closeButton').addEventListener('click', function() {
+            document.getElementById('blurBackground').classList.remove('show');
+            document.getElementById('formContainer').classList.remove('show');
+        });
+
+        document.getElementById('verifyButton').addEventListener('click', function() {
+            const number = document.getElementById('numberInput').value.trim();
+            if (number !== '') {
+                verifyNumber(number);
+            }
+        });
+
+        function verifyNumber(number) {
+            fetch('verify.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ number: number })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    window.location.href = './log.php';
+                } else {
+                    alert('Number not found');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
